@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (
-    QWidget, QPushButton, QVBoxLayout, QFileDialog, QApplication, QProgressBar, QTextEdit
+    QWidget, QPushButton, QFileDialog, QApplication, QProgressBar, QTextEdit, QHBoxLayout, QVBoxLayout
 )
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from helpers import virustotal
@@ -21,10 +21,34 @@ class MainWindow(QWidget):
         self.setStyleSheet('background: rgba(207, 207, 207, 1);')
 
     def initUI(self):
-        # Основной layout
-        self.layout = QVBoxLayout()
+        # Главный горизонтальный макет
+        main_layout = QHBoxLayout()
 
-        # Прогресс-бар
+        # Вертикальный макет для кнопок (слева)
+        buttons_layout = QVBoxLayout()
+        self.b_scan_file = QPushButton('Сканировать файл')
+        self.b_scan_folder = QPushButton('Сканировать папку')
+        self.b_exit = QPushButton('Выход')
+
+        # Стили кнопок
+        for button in [self.b_scan_file, self.b_scan_folder, self.b_exit]:
+            button.setStyleSheet('''
+                background: #7079f0;
+                color: white;
+                min-width: 150px;
+                font-size: 16px;
+                font-weight: 500;
+                border-radius: 0.5em;
+                border: none;
+                height: 2.5em;
+            ''')
+            buttons_layout.addWidget(button, alignment=Qt.AlignTop)
+
+        buttons_layout.addStretch()  # Отступ внизу для кнопок
+
+        # Вертикальный макет для прогресс-бара и текста (справа)
+        right_layout = QVBoxLayout()
+
         self.progress_bar = QProgressBar()
         self.progress_bar.setValue(0)
         self.progress_bar.setStyleSheet('''
@@ -39,26 +63,22 @@ class MainWindow(QWidget):
             }
         ''')
 
-        # Кнопки
-        self.b_scan_file = QPushButton('Сканировать файл')
-        self.b_scan_file.setStyleSheet(self.button_style())
-        self.b_scan_folder = QPushButton('Сканировать папку')
-        self.b_scan_folder.setStyleSheet(self.button_style())
-        self.b_exit = QPushButton('Выход')
-        self.b_exit.setStyleSheet(self.button_style())
-
-        # Текстовое поле для вывода результатов
         self.result_box = QTextEdit()
         self.result_box.setReadOnly(True)
+        self.result_box.setStyleSheet('''
+            background: white;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        ''')
 
-        # Добавление элементов в layout
-        self.layout.addWidget(self.progress_bar)
-        self.layout.addWidget(self.b_scan_file, alignment=Qt.AlignCenter)
-        self.layout.addWidget(self.b_scan_folder, alignment=Qt.AlignCenter)
-        self.layout.addWidget(self.b_exit, alignment=Qt.AlignCenter)
-        self.layout.addWidget(self.result_box)
+        right_layout.addWidget(self.progress_bar)
+        right_layout.addWidget(self.result_box)
 
-        self.setLayout(self.layout)
+        # Добавление макетов в главный макет
+        main_layout.addLayout(buttons_layout, stretch=1)  # Кнопки занимают меньше пространства
+        main_layout.addLayout(right_layout, stretch=2)  # Прогресс-бар и текст занимают больше пространства
+
+        self.setLayout(main_layout)
 
     def button_style(self):
         return '''

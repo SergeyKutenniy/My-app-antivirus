@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QApplication
 from windows import mainwindow
 
 if __name__ == "__main__":
-    app = QApplication([])
+    import sys
+    app = QApplication(sys.argv)
     mw = mainwindow.MainWindow()
-    app.exec_()  
+    sys.exit(app.exec_())
