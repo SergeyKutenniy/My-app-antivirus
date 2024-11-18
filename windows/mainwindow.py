@@ -6,7 +6,6 @@ from helpers import virustotal
 import os
 from helpers.scan_thread import ScanThread
 
-
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
